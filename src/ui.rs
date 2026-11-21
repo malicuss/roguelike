@@ -6,7 +6,7 @@ use ratatui::{
 };
 
 use crate::app::App;
-
+/// the actual drawer with all related stuff
 pub fn render(app: &mut App, frame: &mut Frame) {
     frame.render_widget(
         Paragraph::new(format!(

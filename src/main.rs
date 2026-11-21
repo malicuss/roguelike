@@ -1,27 +1,20 @@
-use std::{io::IsTerminal, ops::Add};
-
 use color_eyre::{eyre::Ok, eyre::Result};
 use ratatui::{
     Terminal,
-    backend::{self, CrosstermBackend},
+    backend::{CrosstermBackend},
 };
 use tui::Tui;
 
 use crate::event::EventHandler;
-/// Application.
+
 pub mod app;
-
-/// Terminal events handler.
 pub mod event;
-
-/// Widget renderer.
 pub mod ui;
-
-/// Terminal user interface.
 pub mod tui;
-
-/// Application updater.
 pub mod update;
+pub mod monsters;
+pub mod room;
+pub mod hero;
 
 fn main() -> Result<()> {
     // create a new app
@@ -39,7 +32,7 @@ fn main() -> Result<()> {
         match tui.events.next()? {
             event::Event::Tick => {}
             event::Event::Key(key_event) => update::updadte(&mut app, &key_event),
-            event::Event::Mouse(mouse_event) => {},
+            event::Event::Mouse(_) => {},
             event::Event::Resize(_, _) => todo!(),
         }
     }

@@ -11,6 +11,7 @@ use ratatui::crossterm::{
 
 use crate::{app::App, event::EventHandler, ui};
 
+/// Layer between core logic and what shown on UI
 #[derive(Debug)]
 pub struct Tui {
     pub terminal: CrosstermTerminal,
@@ -43,8 +44,8 @@ impl Tui {
         Ok(())
     }
 
-    pub fn draw(&mut self, app: &mut App)->Result<()>{
-        self.terminal.draw(|frame|ui::render(app, frame))?;
+    pub fn draw(&mut self, app: &mut App) -> Result<()> {
+        self.terminal.draw(|frame| ui::render(app, frame))?;
         Ok(())
     }
 

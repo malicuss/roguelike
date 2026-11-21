@@ -8,8 +8,6 @@ pub fn updadte(app: &mut App, key: &KeyEvent) {
         KeyCode::Char('c') | KeyCode::Char('C') if key.modifiers == KeyModifiers::CONTROL => {
             app.quit()
         }
-        KeyCode::Up => app.increment_counter(),
-        KeyCode::Down => app.decrement_counter(),
         _ => {},
     }
 }
