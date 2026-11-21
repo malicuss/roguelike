@@ -19,6 +19,7 @@ pub mod hero;
 fn main() -> Result<()> {
     // create a new app
     let mut app = app::App::new();
+    _= app.init();
 
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend);

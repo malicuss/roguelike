@@ -1,5 +1,7 @@
+use crate::room::Direction;
+
 #[derive(Debug)]
-pub struct Man{
+pub struct Man {
     /// need to figure out how to implement fixed movement speed.
     /// 100 - is 100% on 4 hp
     /// 3 hp - it is 85%
@@ -9,17 +11,21 @@ pub struct Man{
     pub hp: u8,
 
     /// position in room x,y
-    pub position: (u8,u8),
+    pub position: (u8, u8),
 }
 
 impl Man {
-    pub fn new(&self)->Man{
+    pub fn new(&self) -> Man {
         Self::default()
     }
 }
 
 impl Default for Man {
     fn default() -> Self {
-        Self { speed: 100, hp: 4, position: (0,0) }
-    }    
+        Self {
+            speed: 100,
+            hp: 4,
+            position: (0, 0),
+        }
+    }
 }

@@ -8,6 +8,10 @@ pub fn updadte(app: &mut App, key: &KeyEvent) {
         KeyCode::Char('c') | KeyCode::Char('C') if key.modifiers == KeyModifiers::CONTROL => {
             app.quit()
         }
+        KeyCode::Char('s')=>app.move_hero(crate::room::Direction::Down),
+        KeyCode::Char('w')=>app.move_hero(crate::room::Direction::Up),
+        KeyCode::Char('a')=>app.move_hero(crate::room::Direction::Left),
+        KeyCode::Char('d')=>app.move_hero(crate::room::Direction::Right),
         _ => {},
     }
 }

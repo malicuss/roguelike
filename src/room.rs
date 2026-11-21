@@ -2,13 +2,15 @@ use color_eyre::Result;
 
 use crate::{hero::Man, monsters::Monster};
 
-enum DoorLocation {
-    North,
-    East,
-    South,
-    West,
+#[derive(Debug)]
+pub enum Direction {
+    Up,
+    Right,
+    Down,
+    Left,
 }
 
+#[derive(Debug)]
 enum DoorPostion {
     Centered,
     Left,
@@ -29,8 +31,8 @@ pub struct Room {
 impl Room {
     pub fn new() -> Room {
         Room {
-            heitgh: 150,
-            width: 150,
+            heitgh: 80,
+            width: 80,
             monsters: vec![],
             connections: vec![(0u8, 0u8); 5],
         }
@@ -40,7 +42,7 @@ impl Room {
     pub fn init(&mut self) -> Result<&Self> {
         self.monsters.push(Monster::spawn(self));
         self.connections
-            .push(self.create_door(DoorLocation::East, DoorPostion::Right));
+            .push(self.create_door(Direction::Right, DoorPostion::Right));
         Ok(self)
     }
 
@@ -50,8 +52,8 @@ impl Room {
         Ok(self.clone())
     }
 
-    /// we looking down and right
-    fn create_door(&self, location: DoorLocation, position: DoorPostion) -> (u8, u8) {
+    /// we always looking down and right
+    fn create_door(&self, location: Direction, position: DoorPostion) -> (u8, u8) {
         let offset = |len: u8, pos| match pos {
             DoorPostion::Left => 3 * len / 4,
             DoorPostion::Centered => len / 2,
@@ -59,10 +61,10 @@ impl Room {
         };
 
         match location {
-            DoorLocation::North => (offset(self.width, position), self.heitgh),
-            DoorLocation::South => (offset(self.width, position), 0),
-            DoorLocation::East => (self.width, offset(self.heitgh, position)),
-            DoorLocation::West => (0, offset(self.heitgh, position)),
+            Direction::Up => (offset(self.width, position), self.heitgh),
+            Direction::Down => (offset(self.width, position), 0),
+            Direction::Right => (self.width, offset(self.heitgh, position)),
+            Direction::Left => (0, offset(self.heitgh, position)),
         }
     }
     fn DEBUG_POSITION_CENTERED(&self) -> (u8, u8) {
