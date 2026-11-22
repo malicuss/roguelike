@@ -1,4 +1,4 @@
-use crate::game::action_timer::ActionTimer;
+use crate::game::{action_timer::ActionTimer, helpers::Pos};
 
 #[derive(Debug)]
 pub struct Man {
@@ -7,27 +7,23 @@ pub struct Man {
     /// 3 hp - it is 85%
     /// 2 hp - 75%
     /// 1 hp - 60%
-    pub speed: u8,
+    // pub speed: u8,
     pub hp: u8,
 
     /// position in room x,y
-    pub position: (u8, u8),
+    pub position: Pos,
 
     pub action_timer: ActionTimer,
 }
 
 impl Man {
-    pub fn new(&self) -> Man {
-        Self::default()
-    }
-
     pub fn tick(&mut self) {
         // hero logic goes here
         // need to decide how "move" should work
         self.action_timer.on_tick();
     }
 
-    pub fn spawn_in_room(&mut self, position: (u8, u8)) {
+    pub fn spawn_in_room(&mut self, position: Pos) {
         self.position = position;
     }
 }
@@ -35,9 +31,9 @@ impl Man {
 impl Default for Man {
     fn default() -> Self {
         Self {
-            speed: 100,
+            //speed: 100,
             hp: 4,
-            position: (0, 0),
+            position: Pos::default(),
             action_timer: ActionTimer::default(),
         }
     }

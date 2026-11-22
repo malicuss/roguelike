@@ -1,4 +1,4 @@
-use crate::game::{Man, MonsterCtx, Room, helpers::Direction};
+use crate::game::{Man, MonsterCtx, Room, helpers::{Direction,Pos}};
 use color_eyre::Result;
 
 /// Graveyard. night. man vs skeletons. skeletons - slow and steady(speed always the same). man - hero. no fight, just run. hp - 4 hits.
@@ -32,8 +32,7 @@ impl App {
         // ctx first
         let ctx: MonsterCtx = MonsterCtx {
             hero_position: self.hero.position,
-            width: self.active_room.width,
-            height: self.active_room.heitgh,
+            room_pos:self.active_room.size()
         };
 
         // tick to hero, always goes first
@@ -50,12 +49,10 @@ impl App {
     }
 
     pub fn move_hero(&mut self, direction: Direction) {
-        let (dx, dy) = direction.Vector();
-        let x =
-            (self.hero.position.0 as i16 + dx as i16).clamp(0, self.active_room.width as i16) as u8;
-        let y = (self.hero.position.1 as i16 + dy as i16).clamp(0, self.active_room.heitgh as i16)
-            as u8;
-        self.hero.position = (x, y);
+
+        self.hero.position.step(direction, Pos::new(self.active_room.width, self.active_room.height));
+        let pos = self.hero.position.step(direction, Pos::new(self.active_room.width, self.active_room.height));
+        self.hero.position = pos;
     }
 
     /// initializing world
@@ -65,7 +62,7 @@ impl App {
         self.active_room = Room::new();
         self.active_room.init();
         self.hero
-            .spawn_in_room((self.active_room.width / 2, self.active_room.heitgh / 2));
+            .spawn_in_room(self.active_room.center());
         Ok(())
     }
 }

@@ -25,7 +25,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     .areas(frame.area());
 
     // Hero position in world coordinates (u8).
-    let (hx, hy) = app.hero.position;
+    let (hx, hy) = app.hero.position.to_tuple();
     // Camera: keep the hero at the screen center.
     // Camera coordinates are signed (i16) on purpose: when the hero reaches the
     // left/top edge of the room the camera goes negative and the hero stays
@@ -43,9 +43,9 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     // free clipping: no need to draw the whole room, only what is visible.
     // The map_area offset is added to the result so entities don't "slide"
     // whenever the layout changes.
-    let to_screen = |x: u8, y: u8| -> Option<(u16, u16)> {
-        let sx = x as i16 - cam_x;
-        let sy = y as i16 - cam_y;
+    let to_screen = |x: i16, y: i16| -> Option<(u16, u16)> {
+        let sx = x - cam_x;
+        let sy = y - cam_y;
         if (0..map_area.width as i16).contains(&sx) && (0..map_area.height as i16).contains(&sy) {
             Some((map_area.x + sx as u16, map_area.y + sy as u16))
         } else {
@@ -65,7 +65,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
             let inside = world_x >= 0
                 && world_y >= 0
                 && world_x <= app.active_room.width as i16
-                && world_y <= app.active_room.heitgh as i16;
+                && world_y <= app.active_room.height as i16;
             // cell_mut returns Option: None outside the buffer — extra protection
             // against panics, although by construction of the loop we are always inside map_area.
             if let Some(cell) = buf.cell_mut((map_area.x + screen_x, map_area.y + screen_y)) {
@@ -79,8 +79,8 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     }
     // 2. Doors. Layer order = code order: whatever is drawn later
     // overwrites the previous layer (the floor is already drawn — the door goes on top of it).
-    for &(door_x, door_y) in &app.active_room.connections {
-        if let Some((x, y)) = to_screen(door_x, door_y)
+    for &p in &app.active_room.connections {
+        if let Some((x, y)) = to_screen(p.x, p.y)
             && let Some(cell) = buf.cell_mut((x, y))
         {
             cell.set_char('+').set_fg(Color::Blue);
@@ -89,13 +89,13 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     // Monsters — same scheme: world -> screen, None (off-camera) is simply skipped.
     for m in &app.active_room.monsters {
         // area coloring separate from monster
-        let sx = m.position.0 as i16 - cam_x + map_area.x as i16;
-        let sy = m.position.1 as i16 - cam_y + map_area.y as i16;
+        let sx = m.position.x - cam_x + map_area.x as i16;
+        let sy = m.position.y - cam_y + map_area.y as i16;
         area(buf, map_area, (sx, sy), m.notice_area, Green);
         area(buf, map_area, (sx, sy), m.aggression_area, Yellow);
         area(buf, map_area, (sx, sy), m.attack_area, Red);
 
-        if let Some((x, y)) = to_screen(m.position.0, m.position.1) {
+        if let Some((x, y)) = to_screen(m.position.x, m.position.y) {
             if let Some(cell) = buf.cell_mut((x, y)) {
                 cell.set_char('M').set_fg(Color::Red);
             }
@@ -125,7 +125,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
         Paragraph::new(format!(
             "hero:({hx},{hy}) cam:({cam_x},{cam_y}) room:{}x{} monsters:{} doors:{} counter:{}",
             app.active_room.width,
-            app.active_room.heitgh,
+            app.active_room.height,
             app.active_room.monsters.len(),
             app.active_room.connections.len(),
             app.counter,
