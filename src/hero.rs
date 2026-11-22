@@ -1,5 +1,3 @@
-use crate::room::Direction;
-
 #[derive(Debug)]
 pub struct Man {
     /// need to figure out how to implement fixed movement speed.

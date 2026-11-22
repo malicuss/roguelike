@@ -15,6 +15,7 @@ pub mod update;
 pub mod monsters;
 pub mod room;
 pub mod hero;
+pub mod action_timer;
 
 fn main() -> Result<()> {
     // create a new app
@@ -23,7 +24,7 @@ fn main() -> Result<()> {
 
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend);
-    let events = EventHandler::new(250);
+    let events = EventHandler::new(50);
     let mut tui = Tui::new(terminal?, events);
     tui.enter()?;
 

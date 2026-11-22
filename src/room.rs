@@ -34,7 +34,7 @@ impl Room {
             heitgh: 80,
             width: 80,
             monsters: vec![],
-            connections: vec![(0u8, 0u8); 5],
+            connections: vec![],
         }
     }
 
@@ -43,12 +43,14 @@ impl Room {
         self.monsters.push(Monster::spawn(self));
         self.connections
             .push(self.create_door(Direction::Right, DoorPostion::Right));
+        self.connections
+            .push(self.create_door(Direction::Right, DoorPostion::Left));
         Ok(self)
     }
 
     /// Span hero for first time or after death. DEBUG_POSITION to be removed.
     pub fn spawn_hero(&self, hero: &mut Man) -> Result<Self> {
-        hero.position = self.DEBUG_POSITION_CENTERED();
+        hero.position = self.debug_position_centered();
         Ok(self.clone())
     }
 
@@ -67,7 +69,7 @@ impl Room {
             Direction::Left => (0, offset(self.heitgh, position)),
         }
     }
-    fn DEBUG_POSITION_CENTERED(&self) -> (u8, u8) {
+    fn debug_position_centered(&self) -> (u8, u8) {
         (self.width / 2, self.heitgh / 2)
     }
 }

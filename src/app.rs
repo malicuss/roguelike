@@ -26,7 +26,7 @@ impl App {
         Self::default()
     }
 
-    pub fn tick(&self) {}
+    pub fn tick(&mut self) {}
 
     pub fn quit(&mut self) {
         self.should_quit = true

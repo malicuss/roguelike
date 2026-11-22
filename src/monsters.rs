@@ -14,6 +14,12 @@ pub struct Monster {
 
     /// position in room x,y
     pub position: (u8, u8),
+
+    /// how far can it bite
+    pub attack_area: u8,
+    /// how far can it sees
+    pub aggression_area: u8,
+    
 }
 
 impl Monster {
@@ -25,6 +31,8 @@ impl Monster {
             is_alive: true,
             res_cd_sec: -1,
             position: (0, 0),
+            attack_area: 2,
+            aggression_area: 6
         }
     }
 
