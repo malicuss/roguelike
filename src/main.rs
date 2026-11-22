@@ -14,7 +14,7 @@ pub mod tui;
 pub mod update;
 pub mod monsters;
 pub mod room;
-pub mod hero;
+pub mod man;
 pub mod action_timer;
 
 fn main() -> Result<()> {
@@ -35,7 +35,7 @@ fn main() -> Result<()> {
             event::Event::Tick => {}
             event::Event::Key(key_event) => update::updadte(&mut app, &key_event),
             event::Event::Mouse(_) => {},
-            event::Event::Resize(_, _) => todo!(),
+            event::Event::Resize(_, _) => {},
         }
     }
 

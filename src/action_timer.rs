@@ -19,6 +19,12 @@ impl Default for ActionTimer {
     }
 }
 
+impl Clone for ActionTimer {
+    fn clone(&self) -> Self {
+        Self { energy: self.energy.clone(), fill_rate: self.fill_rate.clone(), energy_modifier: 1.0, fill_rate_modifier:1.0 }
+    }
+}
+
 impl ActionTimer {
     pub const DEFAULT_ENERGY: u32 = 1000;
     pub const DEFAULT_FILL_RATE: u32 = 50;

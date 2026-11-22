@@ -1,6 +1,6 @@
 use color_eyre::Result;
 
-use crate::hero::Man;
+use crate::man::Man;
 use crate::room::{Direction, Room};
 
 /// Graveyard. night. man vs skeletons. skeletons - slow and steady(speed always the same). man - hero. no fight, just run. hp - 4 hits.
@@ -26,19 +26,23 @@ impl App {
         Self::default()
     }
 
-    pub fn tick(&mut self) {}
+    pub fn tick(&mut self) {
+        // tick to hero, always goes first
+
+        // tick to monsters
+    }
 
     pub fn quit(&mut self) {
         self.should_quit = true
     }
 
     pub fn move_hero(&mut self, direction: Direction) {
-        match direction {
-            Direction::Down => self.hero.position.1 = (self.hero.position.1+1).min(self.active_room.heitgh),
-            Direction::Right => self.hero.position.0 = (self.hero.position.0+1).min(self.active_room.width),
-            Direction::Up => self.hero.position.1 = self.hero.position.1.saturating_sub(1),
-            Direction::Left => self.hero.position.0 = self.hero.position.0.saturating_sub(1),
-        }
+        let (dx, dy) = direction.Vector();
+        let x =
+            (self.hero.position.0 as i16 + dx as i16).clamp(0, self.active_room.width as i16) as u8;
+        let y = (self.hero.position.1 as i16 + dy as i16).clamp(0, self.active_room.heitgh as i16)
+            as u8;
+        self.hero.position = (x, y);
     }
 
     pub fn init(&mut self) -> Result<()> {

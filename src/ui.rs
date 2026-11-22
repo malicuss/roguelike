@@ -3,7 +3,7 @@ use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Layout, Rect},
     style::{
-        Color::{self, Red, Yellow},
+        Color::{self, Green, Red, Yellow},
         Style,
     },
     widgets::{Block, Borders, Paragraph},
@@ -88,9 +88,14 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     }
     // Monsters — same scheme: world -> screen, None (off-camera) is simply skipped.
     for m in &app.active_room.monsters {
+        // area coloring separate from monster
+        let sx = m.position.0 as i16 - cam_x + map_area.x as i16;
+        let sy = m.position.1 as i16 - cam_y + map_area.y as i16;
+        area(buf, map_area, (sx, sy), m.notice_area, Green);
+        area(buf, map_area, (sx, sy), m.aggression_area, Yellow);
+        area(buf, map_area, (sx, sy), m.attack_area, Red);
+
         if let Some((x, y)) = to_screen(m.position.0, m.position.1) {
-            area(buf, map_area, (x, y), m.aggression_area, Yellow);
-            area(buf, map_area, (x, y), m.attack_area, Red);
             if let Some(cell) = buf.cell_mut((x, y)) {
                 cell.set_char('M').set_fg(Color::Red);
             }
@@ -126,28 +131,28 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     );
 }
 
-fn area(buff: &mut Buffer, map_area: Rect, position: (u16, u16), area: u8, color: Color) {
+fn area(buff: &mut Buffer, map_area: Rect, position: (i16, i16), area: u8, color: Color) {
     let r = area as i32;
     let (cx, cy) = (position.0 as i32, position.1 as i32);
     for dy in -r..=r {
         for dx in -r..=r {
-            // bounding box + фильтр круга; 4*dy*dy — компенсация
-            // прямоугольных клеток (высота ~2x ширины), иначе будет овал
+            // bounding box + circle filter; 4*dy*dy — compensation could be done
+            // should i use it or not ?
             if dx * dx + dy * dy > r * r {
                 continue;
             }
-            // за экран уходим в отрицательные координаты — отбрасываем до каста
+            // offscreen is negative
             let (Ok(x), Ok(y)) = (u16::try_from(cx + dx), u16::try_from(cy + dy)) else {
                 continue;
             };
-            // outside the map zone — into HUD/дебаг не лезем
+            // outside the map zone — into HUD/debug
             if !map_area.contains(ratatui::layout::Position { x, y }) {
                 continue;
             }
             if let Some(cell) = buff.cell_mut((x, y))
-                && (cell.symbol() == "."|| cell.symbol() == "*")
+                && (cell.symbol() == "." || cell.symbol() == ",")
             {
-                cell.set_char('*').set_fg(color);
+                cell.set_char(',').set_fg(color);
             }
         }
     }

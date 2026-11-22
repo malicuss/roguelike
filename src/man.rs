@@ -1,3 +1,5 @@
+use crate::action_timer::ActionTimer;
+
 #[derive(Debug)]
 pub struct Man {
     /// need to figure out how to implement fixed movement speed.
@@ -10,11 +12,18 @@ pub struct Man {
 
     /// position in room x,y
     pub position: (u8, u8),
+
+    pub action_timer: ActionTimer,
 }
 
 impl Man {
     pub fn new(&self) -> Man {
         Self::default()
+    }
+
+    pub fn tick(&mut self){
+        // hero logic goes here
+        // need to decide how "move" should work
     }
 }
 
@@ -24,6 +33,7 @@ impl Default for Man {
             speed: 100,
             hp: 4,
             position: (0, 0),
+            action_timer: ActionTimer::default()
         }
     }
 }

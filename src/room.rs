@@ -1,13 +1,29 @@
 use color_eyre::Result;
 
-use crate::{hero::Man, monsters::Monster};
+use crate::{man::Man, monsters::Monster};
+
+#[derive(Debug, Clone, Copy)]
+pub enum Direction {
+    Up, Right, Down, Left,
+    UpRight, UpLeft, DownRight, DownLeft,
+}
+impl Direction {
+    pub fn Vector(self)->(i8,i8){
+        match self {
+            Self::Up => (0, -1),   Self::Down => (0, 1),
+            Self::Left => (-1, 0), Self::Right => (1, 0),
+            Self::UpRight => (1, -1),  Self::UpLeft => (-1, -1),
+            Self::DownRight => (1, 1), Self::DownLeft => (-1, 1),
+        }
+    }
+}
 
 #[derive(Debug)]
-pub enum Direction {
-    Up,
-    Right,
-    Down,
-    Left,
+pub enum Location {
+    North,
+    East,
+    West,
+    South
 }
 
 #[derive(Debug)]
@@ -42,9 +58,11 @@ impl Room {
     pub fn init(&mut self) -> Result<&Self> {
         self.monsters.push(Monster::spawn(self));
         self.connections
-            .push(self.create_door(Direction::Right, DoorPostion::Right));
+            .push(self.create_door(Location::East, DoorPostion::Right));
         self.connections
-            .push(self.create_door(Direction::Right, DoorPostion::Left));
+            .push(self.create_door(Location::East, DoorPostion::Left));
+        self.connections
+            .push(self.create_door(Location::North, DoorPostion::Centered));
         Ok(self)
     }
 
@@ -55,7 +73,7 @@ impl Room {
     }
 
     /// we always looking down and right
-    fn create_door(&self, location: Direction, position: DoorPostion) -> (u8, u8) {
+    fn create_door(&self, location: Location, position: DoorPostion) -> (u8, u8) {
         let offset = |len: u8, pos| match pos {
             DoorPostion::Left => 3 * len / 4,
             DoorPostion::Centered => len / 2,
@@ -63,10 +81,10 @@ impl Room {
         };
 
         match location {
-            Direction::Up => (offset(self.width, position), self.heitgh),
-            Direction::Down => (offset(self.width, position), 0),
-            Direction::Right => (self.width, offset(self.heitgh, position)),
-            Direction::Left => (0, offset(self.heitgh, position)),
+            Location::North => (offset(self.width, position), self.heitgh),
+            Location::South => (offset(self.width, position), 0),
+            Location::East => (self.width, offset(self.heitgh, position)),
+            Location::West => (0, offset(self.heitgh, position))
         }
     }
     fn debug_position_centered(&self) -> (u8, u8) {

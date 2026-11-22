@@ -1,6 +1,7 @@
 use rand::RngExt;
 use rand::rng;
 
+use crate::action_timer::ActionTimer;
 use crate::room::Room;
 
 #[derive(Debug, Clone)]
@@ -17,8 +18,12 @@ pub struct Monster {
 
     /// how far can it bite
     pub attack_area: u8,
-    /// how far can it sees
+    /// how far can it agro
     pub aggression_area: u8,
+    /// how far it can see
+    pub notice_area: u8,
+
+    pub action_timer: ActionTimer,
     
 }
 
@@ -32,7 +37,9 @@ impl Monster {
             res_cd_sec: -1,
             position: (0, 0),
             attack_area: 2,
-            aggression_area: 6
+            aggression_area: 6,
+            notice_area: 17,
+            action_timer: ActionTimer::new(0.7, 0.5),
         }
     }
 
@@ -44,6 +51,18 @@ impl Monster {
             rng.random_range(0..room.heitgh),
         );
         r
+    }
+
+    pub fn tick(&mut self){
+        // monster (BASIC) logic goes here
+        // think how to do this logic modifiable.
+
+        // where to go if no hero in vicinity - random
+        // hero in vicinity - walk to him
+        // hero in aggro zone - run to him
+        // hero in bite zone - bite him
+        // if run is not an option - walk
+        // if bite is not an option but walk is available - waite and bit if zone is bite, walk if zone is agro
     }
 }
 
