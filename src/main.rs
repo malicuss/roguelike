@@ -5,7 +5,7 @@ use ratatui::{
 };
 use tui::Tui;
 
-use crate::event::EventHandler;
+use crate::{app::App, event::EventHandler};
 
 pub mod app;
 pub mod event;
@@ -24,7 +24,7 @@ fn main() -> Result<()> {
 
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend);
-    let events = EventHandler::new(50);
+    let events = EventHandler::new(App::DEFAULT_TICK);
     let mut tui = Tui::new(terminal?, events);
     tui.enter()?;
 
@@ -32,7 +32,7 @@ fn main() -> Result<()> {
         tui.draw(&mut app)?;
 
         match tui.events.next()? {
-            event::Event::Tick => {}
+            event::Event::Tick => app.tick(),
             event::Event::Key(key_event) => update::updadte(&mut app, &key_event),
             event::Event::Mouse(_) => {},
             event::Event::Resize(_, _) => {},

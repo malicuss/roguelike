@@ -1,6 +1,7 @@
 use color_eyre::Result;
 
 use crate::man::Man;
+use crate::monsters::MonsterCtx;
 use crate::room::{Direction, Room};
 
 /// Graveyard. night. man vs skeletons. skeletons - slow and steady(speed always the same). man - hero. no fight, just run. hp - 4 hits.
@@ -22,17 +23,23 @@ pub struct App {
 }
 
 impl App {
+    /// each N ms tick appear
+    pub const DEFAULT_TICK: u64 = 100;
+
     pub fn new() -> Self {
         Self::default()
     }
 
     pub fn tick(&mut self) {
+        // ctx first
+        let ctx: MonsterCtx = MonsterCtx { hero_position: self.hero.position, width: self.active_room.width, height: self.active_room.heitgh };
+
         // tick to hero, always goes first
         self.hero.tick();
 
         // tick to monsters
         for m in &mut self.active_room.monsters{
-            m.tick();
+            m.tick(&ctx);
         }
     }
 
