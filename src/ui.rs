@@ -111,7 +111,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     // the widget fills the area it is given, on top of whatever is already there
     // (that is why the Layout zones don't overlap map_area and the floor doesn't erase it).
     frame.render_widget(
-        Paragraph::new(format!("HP: {} | q — quit", app.hero.hp))
+        Paragraph::new(format!("HP: {} | Energy: {} | Esq — quit", app.hero.hp, app.hero.action_timer.get_energy()))
             .block(Block::default().borders(Borders::ALL)),
         _hud,
     );

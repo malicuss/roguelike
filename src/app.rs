@@ -4,7 +4,7 @@ use crate::man::Man;
 use crate::room::{Direction, Room};
 
 /// Graveyard. night. man vs skeletons. skeletons - slow and steady(speed always the same). man - hero. no fight, just run. hp - 4 hits.
-/// graveyard 20 zones 5x4. labirinth. Rooms appears when they entered.
+/// graveyard 20 zones 150x140. labirinth. Rooms appears when they entered.
 ///
 /// App should store all main application logic, not related to drawing and all that stuff
 #[derive(Debug, Default)]
@@ -28,8 +28,12 @@ impl App {
 
     pub fn tick(&mut self) {
         // tick to hero, always goes first
+        self.hero.tick();
 
         // tick to monsters
+        for m in &mut self.active_room.monsters{
+            m.tick();
+        }
     }
 
     pub fn quit(&mut self) {
@@ -48,12 +52,9 @@ impl App {
     pub fn init(&mut self) -> Result<()> {
         self.hero = Man::default();
         self.rooms_visited = vec![];
-
-        self.active_room = Room::new()
-            .init()
-            .expect("faild too init room")
-            .spawn_hero(&mut self.hero)
-            .expect("faild to place hero");
+        self.active_room = Room::new();
+        self.active_room.init();
+        self.hero.spawn_in_room((self.active_room.width/2,self.active_room.heitgh/2));
         Ok(())
     }
 }

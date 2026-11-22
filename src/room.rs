@@ -55,7 +55,7 @@ impl Room {
     }
 
     // what should be in room: connection (enter/exit) up to 5, monsters, some stuff(later)
-    pub fn init(&mut self) -> Result<&Self> {
+    pub fn init(&mut self) {
         self.monsters.push(Monster::spawn(self));
         self.connections
             .push(self.create_door(Location::East, DoorPostion::Right));
@@ -63,13 +63,6 @@ impl Room {
             .push(self.create_door(Location::East, DoorPostion::Left));
         self.connections
             .push(self.create_door(Location::North, DoorPostion::Centered));
-        Ok(self)
-    }
-
-    /// Span hero for first time or after death. DEBUG_POSITION to be removed.
-    pub fn spawn_hero(&self, hero: &mut Man) -> Result<Self> {
-        hero.position = self.debug_position_centered();
-        Ok(self.clone())
     }
 
     /// we always looking down and right

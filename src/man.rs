@@ -25,6 +25,10 @@ impl Man {
         // hero logic goes here
         // need to decide how "move" should work
     }
+
+    pub fn spawn_in_room(&mut self, position:(u8,u8)){
+        self.position = position;
+    }
 }
 
 impl Default for Man {
