@@ -13,9 +13,8 @@ pub enum ActionCost {
 /// 20 standart ticks per second
 #[derive(Debug)]
 pub struct ActionTimer {
-    energy: u8,    // 100 Energy
-    fill_rate: u8, // fill energy rate enrgy/per tick, 10 per tick
-
+    energy: u8,
+    fill_rate: u8,
     energy_modifier: f32,
     fill_rate_modifier: f32,
 }
@@ -43,11 +42,11 @@ impl Clone for ActionTimer {
 }
 
 impl ActionTimer {
-    pub const DEFAULT_ENERGY: u8 = 100;
-    pub const DEFAULT_FILL_RATE: u8 = 10;
-    /// 2 sec for full energy fill
+    const DEFAULT_ENERGY: u8 = 100;
+    const DEFAULT_FILL_RATE: u8 = 20;
     const DEFAULT_ENERGY_SPENT: u8 = 50;
 
+    /// delta could be uniqe for monster type.
     pub fn new(energy_delta: f32, fill_rate_delta: f32) -> ActionTimer {
         Self {
             energy: (ActionTimer::DEFAULT_ENERGY as f32 * energy_delta) as u8,
@@ -70,14 +69,17 @@ impl ActionTimer {
         self.fill_rate_modifier = 1.0;
     }
 
+    /// Get actual energy for monster instance
     pub fn get_energy(&self) -> u32 {
         (self.energy as f32 * self.energy_modifier) as u32
     }
 
+    /// Get actual energy fill rate for monster instance
     pub fn get_fill_rate(&self) -> u32 {
         (self.fill_rate as f32 * self.fill_rate_modifier) as u32
     }
 
+    /// energy for each action.
     pub fn try_spend_energy(&mut self, action_cost: ActionCost) -> bool {
         let mut cost: u8 = 0;
         match action_cost {
@@ -98,6 +100,7 @@ impl ActionTimer {
         }
     }
 
+    /// runs every tick.
     pub fn on_tick(&mut self) {
         let nrg_per_tick = (self.fill_rate as f32 * self.fill_rate_modifier) as u8;
         self.energy = self.energy.saturating_add(nrg_per_tick);

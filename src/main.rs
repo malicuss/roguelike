@@ -1,26 +1,15 @@
-use color_eyre::{eyre::Ok, eyre::Result};
-use ratatui::{
-    Terminal,
-    backend::{CrosstermBackend},
-};
-use tui::Tui;
+mod game;
+mod ui;
 
-use crate::{app::App, event::EventHandler};
+use color_eyre::Result;
+use ratatui::{Terminal, backend::CrosstermBackend};
 
-pub mod app;
-pub mod event;
-pub mod ui;
-pub mod tui;
-pub mod update;
-pub mod monsters;
-pub mod room;
-pub mod man;
-pub mod action_timer;
-
+use game::App;
+use ui::{Event::*, EventHandler, Tui, input::handle_key};
 fn main() -> Result<()> {
     // create a new app
-    let mut app = app::App::new();
-    _= app.init();
+    let mut app = App::new();
+    _ = app.init();
 
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend);
@@ -32,10 +21,10 @@ fn main() -> Result<()> {
         tui.draw(&mut app)?;
 
         match tui.events.next()? {
-            event::Event::Tick => app.tick(),
-            event::Event::Key(key_event) => update::updadte(&mut app, &key_event),
-            event::Event::Mouse(_) => {},
-            event::Event::Resize(_, _) => {},
+            Tick => app.tick(),
+            Key(key_event) => handle_key(&mut app, &key_event),
+            Mouse(_) => {}
+            Resize(_, _) => {}
         }
     }
 

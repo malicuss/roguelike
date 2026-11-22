@@ -1,9 +1,9 @@
 use ratatui::crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-use crate::app::App;
-use crate::room::Direction;
+use crate::game::App;
+use crate::game::helpers::*;
 
-pub fn updadte(app: &mut App, key: &KeyEvent) {
+pub fn handle_key(app: &mut App, key: &KeyEvent) {
     match key.code {
         KeyCode::Esc => app.quit(),
         KeyCode::Char('c') | KeyCode::Char('C') if key.modifiers == KeyModifiers::CONTROL => {

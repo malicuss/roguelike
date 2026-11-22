@@ -1,7 +1,5 @@
 use color_eyre::Result;
-use ratatui::crossterm::{
-    event::{self, Event as CrosstermEvent, KeyEvent, MouseEvent},
-};
+use ratatui::crossterm::event::{self, Event as CrosstermEvent, KeyEvent, MouseEvent};
 use std::{
     sync::mpsc,
     thread,
@@ -50,13 +48,12 @@ impl EventHandler {
                                 }
                             }
                             CrosstermEvent::Mouse(e) => sender.send(Event::Mouse(e)),
-                            CrosstermEvent::Resize(a, b) => {
-                                sender.send(Event::Resize(a, b))
-                            }
+                            CrosstermEvent::Resize(a, b) => sender.send(Event::Resize(a, b)),
                             _ => unimplemented!(),
-                        }.expect("failed to send terminal event")
+                        }
+                        .expect("failed to send terminal event")
                     }
-                    if last_tick.elapsed()>= tick_rate{
+                    if last_tick.elapsed() >= tick_rate {
                         sender.send(Event::Tick).expect("faild to send tick event");
                         last_tick = Instant::now();
                     }
@@ -71,7 +68,7 @@ impl EventHandler {
         }
     }
 
-    pub fn next(&self)-> Result<Event>{
+    pub fn next(&self) -> Result<Event> {
         Ok(self.reciver.recv()?)
     }
 }

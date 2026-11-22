@@ -1,8 +1,5 @@
+use crate::game::{Man, MonsterCtx, Room, helpers::Direction};
 use color_eyre::Result;
-
-use crate::man::Man;
-use crate::monsters::MonsterCtx;
-use crate::room::{Direction, Room};
 
 /// Graveyard. night. man vs skeletons. skeletons - slow and steady(speed always the same). man - hero. no fight, just run. hp - 4 hits.
 /// graveyard 20 zones 150x140. labirinth. Rooms appears when they entered.
@@ -23,22 +20,27 @@ pub struct App {
 }
 
 impl App {
-    /// each N ms tick appear
+    /// 10 ticks per secont
     pub const DEFAULT_TICK: u64 = 100;
 
     pub fn new() -> Self {
         Self::default()
     }
 
+    ///
     pub fn tick(&mut self) {
         // ctx first
-        let ctx: MonsterCtx = MonsterCtx { hero_position: self.hero.position, width: self.active_room.width, height: self.active_room.heitgh };
+        let ctx: MonsterCtx = MonsterCtx {
+            hero_position: self.hero.position,
+            width: self.active_room.width,
+            height: self.active_room.heitgh,
+        };
 
         // tick to hero, always goes first
         self.hero.tick();
 
         // tick to monsters
-        for m in &mut self.active_room.monsters{
+        for m in &mut self.active_room.monsters {
             m.tick(&ctx);
         }
     }
@@ -56,12 +58,14 @@ impl App {
         self.hero.position = (x, y);
     }
 
+    /// initializing world
     pub fn init(&mut self) -> Result<()> {
         self.hero = Man::default();
         self.rooms_visited = vec![];
         self.active_room = Room::new();
         self.active_room.init();
-        self.hero.spawn_in_room((self.active_room.width/2,self.active_room.heitgh/2));
+        self.hero
+            .spawn_in_room((self.active_room.width / 2, self.active_room.heitgh / 2));
         Ok(())
     }
 }

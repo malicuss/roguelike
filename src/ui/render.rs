@@ -9,7 +9,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph},
 };
 
-use crate::app::App;
+use crate::game::App;
 /// the actual drawer with all related stuff
 pub fn render(app: &mut App, frame: &mut Frame) {
     // Split the whole screen into 3 horizontal zones, top to bottom:
@@ -111,8 +111,12 @@ pub fn render(app: &mut App, frame: &mut Frame) {
     // the widget fills the area it is given, on top of whatever is already there
     // (that is why the Layout zones don't overlap map_area and the floor doesn't erase it).
     frame.render_widget(
-        Paragraph::new(format!("HP: {} | Energy: {} | Esq — quit", app.hero.hp, app.hero.action_timer.get_energy()))
-            .block(Block::default().borders(Borders::ALL)),
+        Paragraph::new(format!(
+            "HP: {} | Energy: {} | Esq — quit",
+            app.hero.hp,
+            app.hero.action_timer.get_energy()
+        ))
+        .block(Block::default().borders(Borders::ALL)),
         _hud,
     );
     // 6. Debug line under the HUD: hero and camera coordinates are handy for

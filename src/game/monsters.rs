@@ -1,8 +1,9 @@
+use crate::game::ActionTimer;
+use crate::game::Room;
+use crate::game::action_timer::ActionCost;
+
 use rand::RngExt;
 use rand::rng;
-
-use crate::action_timer::{ActionCost, ActionTimer};
-use crate::room::Room;
 
 #[derive(Debug, Clone, Copy)]
 enum MonsterMovement {
@@ -54,6 +55,12 @@ pub struct Monster {
     direction: (i16, i16),
 }
 
+impl Default for Monster {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Monster {
     pub fn new() -> Monster {
         Self {
@@ -66,13 +73,14 @@ impl Monster {
             attack_area: 2,
             aggression_area: 6,
             notice_area: 17,
-            action_timer: ActionTimer::new(0.7, 2.0),
+            action_timer: ActionTimer::new(1.0, 1.0),
             state: MonsterState::Wandering,
             state_ticks_left: 0,
             direction: (0, 0),
         }
     }
 
+    /// Spawns a monster in the room
     pub fn spawn(room: &Room) -> Self {
         let mut r = Self::new();
         let mut rng = rng();
@@ -128,11 +136,5 @@ impl Monster {
             MonsterState::Hunting => todo!(),
             MonsterState::Searching => todo!(),
         }
-    }
-}
-
-impl Default for Monster {
-    fn default() -> Self {
-        Self::new()
     }
 }

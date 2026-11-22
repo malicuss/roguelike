@@ -9,7 +9,7 @@ use ratatui::crossterm::{
     terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
 };
 
-use crate::{app::App, event::EventHandler, ui};
+use crate::{EventHandler, game::App, ui};
 
 /// Layer between core logic and what shown on UI
 #[derive(Debug)]
