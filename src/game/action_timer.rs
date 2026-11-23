@@ -1,19 +1,10 @@
-/// default Energy spent is 100 per action
-#[derive(Debug, Clone)]
-pub enum ActionCost {
-    Free,        // 0
-    Lowered,     // 0.5
-    Standart,    // 1
-    Increased,   // 1,3
-    Doubled,     // 2
-    Tripled,     // 3
-    Overwhelmed, // all or nothing
-}
+use crate::game::helpers::*;
 
 /// 20 standart ticks per second
 #[derive(Debug)]
 pub struct ActionTimer {
-    energy: u8,
+    energy_cap:u16,
+    energy_current: u16,
     fill_rate: u8,
     energy_modifier: f32,
     fill_rate_modifier: f32,
@@ -22,7 +13,8 @@ pub struct ActionTimer {
 impl Default for ActionTimer {
     fn default() -> Self {
         Self {
-            energy: ActionTimer::DEFAULT_ENERGY,
+            energy_cap: ActionTimer::DEFAULT_ENERGY,
+            energy_current: ActionTimer::DEFAULT_ENERGY,
             fill_rate: ActionTimer::DEFAULT_FILL_RATE,
             energy_modifier: 1.0,
             fill_rate_modifier: 1.0,
@@ -33,7 +25,8 @@ impl Default for ActionTimer {
 impl Clone for ActionTimer {
     fn clone(&self) -> Self {
         Self {
-            energy: self.energy.clone(),
+            energy_cap: self.energy_cap.clone(),
+            energy_current: self.energy_current.clone(),
             fill_rate: self.fill_rate.clone(),
             energy_modifier: 1.0,
             fill_rate_modifier: 1.0,
@@ -42,14 +35,15 @@ impl Clone for ActionTimer {
 }
 
 impl ActionTimer {
-    const DEFAULT_ENERGY: u8 = 100;
+    const DEFAULT_ENERGY: u16 = 100;
     const DEFAULT_FILL_RATE: u8 = 20;
     const DEFAULT_ENERGY_SPENT: u8 = 50;
 
     /// delta could be uniqe for monster type.
     pub fn new(energy_delta: f32, fill_rate_delta: f32) -> ActionTimer {
         Self {
-            energy: (ActionTimer::DEFAULT_ENERGY as f32 * energy_delta) as u8,
+            energy_cap: (ActionTimer::DEFAULT_ENERGY as f32 * energy_delta) as u16,
+            energy_current: (ActionTimer::DEFAULT_ENERGY as f32 * energy_delta) as u16,
             fill_rate: (ActionTimer::DEFAULT_FILL_RATE as f32 * fill_rate_delta) as u8,
             energy_modifier: 1.0,
             fill_rate_modifier: 1.0,
@@ -71,7 +65,7 @@ impl ActionTimer {
 
     /// Get actual energy for monster instance
     pub fn get_energy(&self) -> u32 {
-        (self.energy as f32 * self.energy_modifier) as u32
+        self.energy_current as u32
     }
 
     /// Get actual energy fill rate for monster instance
@@ -81,19 +75,19 @@ impl ActionTimer {
 
     /// energy for each action.
     pub fn try_spend_energy(&mut self, action_cost: ActionCost) -> bool {
-        let mut cost: u8 = 0;
+        let mut cost: u16 = 0;
         match action_cost {
             ActionCost::Free => {}
-            ActionCost::Lowered => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 0.5) as u8,
-            ActionCost::Standart => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 1.0) as u8,
-            ActionCost::Increased => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 1.3) as u8,
-            ActionCost::Doubled => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 2.0) as u8,
-            ActionCost::Tripled => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 3.0) as u8,
-            ActionCost::Overwhelmed => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 100.0) as u8,
+            ActionCost::Lowered => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 0.5) as u16,
+            ActionCost::Standart => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 1.0) as u16,
+            ActionCost::Increased => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 1.4) as u16,
+            ActionCost::Doubled => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 2.0) as u16,
+            ActionCost::Tripled => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 3.0) as u16,
+            ActionCost::Overwhelmed => cost = (Self::DEFAULT_ENERGY_SPENT as f32 * 100.0) as u16,
         }
 
-        if self.energy >= cost {
-            self.energy = self.energy.saturating_sub(cost);
+        if self.energy_current >= cost {
+            self.energy_current = self.energy_current.saturating_sub(cost);
             true
         } else {
             false
@@ -102,7 +96,7 @@ impl ActionTimer {
 
     /// runs every tick.
     pub fn on_tick(&mut self) {
-        let nrg_per_tick = (self.fill_rate as f32 * self.fill_rate_modifier) as u8;
-        self.energy = self.energy.saturating_add(nrg_per_tick);
+        let nrg_per_tick = (self.fill_rate as f32 * self.fill_rate_modifier) as u16;
+        self.energy_current = self.energy_current.saturating_add(nrg_per_tick).min(self.energy_cap);
     }
 }

@@ -48,13 +48,6 @@ impl App {
         self.should_quit = true
     }
 
-    pub fn move_hero(&mut self, direction: Direction) {
-
-        self.hero.position.step(direction, Pos::new(self.active_room.width, self.active_room.height));
-        let pos = self.hero.position.step(direction, Pos::new(self.active_room.width, self.active_room.height));
-        self.hero.position = pos;
-    }
-
     /// initializing world
     pub fn init(&mut self) -> Result<()> {
         self.hero = Man::default();

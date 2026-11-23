@@ -23,8 +23,8 @@ fn main() -> Result<()> {
         match tui.events.next()? {
             Tick => app.tick(),
             Key(key_event) => handle_key(&mut app, &key_event),
-            //Mouse(_) => {}
-            //Resize(_, _) => {}
+            Mouse(_) => {}
+            Resize(_, _) => {}
         }
     }
 

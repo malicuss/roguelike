@@ -1,6 +1,6 @@
 use crate::game::ActionTimer;
 use crate::game::Room;
-use crate::game::action_timer::ActionCost;
+use crate::game::helpers::ActionCost;
 use crate::game::helpers::Direction;
 use crate::game::helpers::Pos;
 
@@ -95,8 +95,7 @@ impl Monster {
     }
 
     fn position_change(&mut self, ctx: &MonsterCtx) {
-        self.position.step(self.direction, ctx.room_pos);
-        self.position;
+        self.position = self.position.step(self.direction, ctx.room_pos);
     }
 
     fn behave_resolver(&mut self, ctx: &MonsterCtx) {
@@ -105,9 +104,8 @@ impl Monster {
         let mut rng = rng();
 
         // state resolver goes here.
-
         match self.state {
-            MonsterState::Idle => todo!(),
+            MonsterState::Idle => self.state = MonsterState::Wandering,
             MonsterState::Wandering => {
                 if self.state_ticks_left > 0 {
                     self.state_ticks_left = self.state_ticks_left.saturating_sub(1);
@@ -118,7 +116,7 @@ impl Monster {
                     self.state_ticks_left = rng.random_range(10..50);
                 }
 
-                if self.action_timer.try_spend_energy(ActionCost::Doubled) {
+                if self.action_timer.try_spend_energy(ActionCost::Standart) {
                     self.position_change(ctx);
                 }
             }

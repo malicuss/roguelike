@@ -1,3 +1,15 @@
+/// default Energy spent is 100 per action
+#[derive(Debug, Clone)]
+pub enum ActionCost {
+    Free,        // 0
+    Lowered,     // 0.5
+    Standart,    // 1
+    Increased,   // 1,3
+    Doubled,     // 2
+    Tripled,     // 3
+    Overwhelmed, // all or nothing
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
     InPlace,
